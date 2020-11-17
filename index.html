@@ -27,7 +27,9 @@
         }
     </style>
     <script>
+        var currentPlayingId = null;
         function playFunc(id) {
+            currentPlayingId = id;
             files.forEach(file => {
                 if (file != id) {
                     document.getElementById(file).pause();
@@ -37,7 +39,6 @@
 
         function loadFunc(id) {
             console.log("LOADED: ", id);
-
         }
 
         function loadAudioFile(file) {
@@ -54,6 +55,11 @@
             sound.controls = 'controls';
             sound.onplay = () => {
                 playFunc(file);
+            }
+            sound.onended = () => {
+                console.log("ENDED");
+                document.getElementById(currentPlayingId).play();
+                playFunc(currentPlayingId);
             }
             sound.src = `audio/${file}.mp3`;
             sound.type = 'audio/mp3';
