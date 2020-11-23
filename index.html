@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Audio Player</title>
-    <script src="getfiles.php"></script>
+    <script src="getFiles.php"></script>
+    <script src="getConfig.php"></script>
     <style>
         html,
         body {
@@ -25,6 +26,10 @@
             /* grid-auto-rows: 100px; */
             /* grid-template-columns: 25% 25% 25% 25%; */
             grid-gap: 2px;
+
+            padding: 0.2em;
+            padding-right: 0.6em;
+
         }
 
         .audio-label {
@@ -74,6 +79,12 @@
             margin-bottom: 2px;
         }
 
+        .audio-tags {
+            font-size: 80%;
+            color: #878787;
+            font-family: monospace;
+            font-style: italic;
+        }
 
         .audio-pause {
             background-color: lightpink;
@@ -114,7 +125,7 @@
         .audio-block {
             align-items: center;
             padding: 0.2em;
-            height: 2.5em;
+            height: 3.5em;
             background-color: #4646fc;
             position: relative;
         }
@@ -124,18 +135,51 @@
         }
 
         #audio-top {
-            padding: 0.5em;
+            padding: 0.1em;
             width: 100%;
             background: gray;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 150%;
+            font-size: 130%;
             font-family: monospace;
             color: white;
         }
+
+        #config-loaded {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            background: red;
+            border-radius: 50%;
+        }
     </style>
     <script>
+        //Utility
+        function downloadObjectAsJson(exportObj, exportName) {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+            var downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", exportName + ".json");
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function generateConfig() {
+            var out = [];
+            files.forEach(sing => {
+                console.log(sing);
+                var obj = {
+                    "file": sing,
+                    "tags": [],
+                    "displayName": sing
+                }
+                out.push(obj)
+            })
+            downloadObjectAsJson(out, "test");
+        }
+
         function percentage(partialValue, totalValue) {
             return (100 * partialValue) / totalValue;
         }
@@ -188,6 +232,99 @@
                     document.getElementById(`${file}-block`).style.backgroundColor = "#4646fc";
                 }
             });
+        }
+
+        function loadAudioFileFromConfig(obj) {
+            var audioBlock = document.createElement("div");
+            audioBlock.className = "audio-block";
+            audioBlock.id = `${obj.file}-block`;
+            audioBlock.onclick = () => {
+                playFunc(obj.file);
+            }
+
+            var resetButton = document.createElement("button");
+            resetButton.className = "audio-reset";
+            resetButton.innerHTML = "x";
+            resetButton.onclick = (e) => {
+                stopPlay(obj.file);
+                e.stopPropagation();
+            }
+
+            var upButton = document.createElement("button");
+            upButton.className = "audio-up";
+            upButton.innerHTML = "^";
+            upButton.onclick = (e) => {
+                upVolume(obj.file);
+                e.stopPropagation();
+            }
+
+            var downButton = document.createElement("button");
+            downButton.className = "audio-down";
+            downButton.innerHTML = "v";
+            downButton.onclick = (e) => {
+                downVolume(obj.file);
+                e.stopPropagation();
+            }
+
+            var pauseButton = document.createElement("button");
+            pauseButton.className = "audio-pause";
+            pauseButton.innerHTML = "P";
+            pauseButton.onclick = (e) => {
+                pausePlay(obj.file);
+                e.stopPropagation();
+            }
+
+            var label = document.createElement("p");
+            label.className = "audio-label";
+            label.innerHTML = `<span id="${obj.file}-status" class="statusDiv"></span>${obj.displayName}`;
+
+            var tags = document.createElement("div");
+            tags.className = "audio-tags";
+            tags.innerHTML = "";
+            obj.tags.forEach(tag => {
+                tags.innerHTML += `${tag}, `;
+            })
+
+            var labelTime = document.createElement("p");
+            labelTime.className = "audio-time";
+            labelTime.id = `${obj.file}-time`;
+            labelTime.innerHTML = "0%";
+
+            var labelVolume = document.createElement("p");
+            labelVolume.className = "audio-vol";
+            labelVolume.id = `${obj.file}-vol`;
+            labelVolume.innerHTML = "1";
+
+            var sound = document.createElement('audio');
+            sound.id = obj.file;
+            sound.className = "audio-player";
+            sound.addEventListener('canplaythrough', () => {
+                // console.log("LOADED: ", file);
+                document.getElementById(`${obj.file}-status`).style.backgroundColor = "lightGreen";
+            })
+            sound.onplay = () => {
+                playFunc(obj.file);
+            }
+            sound.onended = () => {
+                document.getElementById(currentPlayingId).play();
+                playFunc(currentPlayingId);
+            }
+            sound.src = `audio/${obj.file}.mp3`;
+            sound.type = 'audio/mp3';
+            sound.onload = () => {
+                // console.log("Loaded: ", file);
+            }
+
+            audioBlock.appendChild(sound);
+            audioBlock.appendChild(label);
+            audioBlock.appendChild(tags);
+            audioBlock.appendChild(labelTime);
+            audioBlock.appendChild(labelVolume);
+            audioBlock.appendChild(resetButton);
+            audioBlock.appendChild(upButton);
+            audioBlock.appendChild(downButton);
+            audioBlock.appendChild(pauseButton);
+            document.getElementById("audio-container").appendChild(audioBlock);
         }
 
         function loadAudioFile(file) {
@@ -248,7 +385,7 @@
             sound.id = file;
             sound.className = "audio-player";
             sound.addEventListener('canplaythrough', () => {
-                console.log("LOADED: ", file);
+                // console.log("LOADED: ", file);
                 document.getElementById(`${file}-status`).style.backgroundColor = "lightGreen";
             })
             sound.onplay = () => {
@@ -261,7 +398,7 @@
             sound.src = `audio/${file}.mp3`;
             sound.type = 'audio/mp3';
             sound.onload = () => {
-                console.log("Loaded: ", file);
+                // console.log("Loaded: ", file);
             }
 
             audioBlock.appendChild(sound);
@@ -276,15 +413,26 @@
         }
 
         function loaded() {
-            files.forEach(file => {
-                loadAudioFile(file);
-            });
+            console.log(config);
+
+            if (config) {
+                console.log("Loading from config file");
+                document.getElementById("config-loaded").style.backgroundColor = "lightGreen";
+                config.forEach(obj => {
+                    loadAudioFileFromConfig(obj);
+                });
+            } else {
+                files.forEach(file => {
+                    loadAudioFile(file);
+                });
+            }
         }
 
     </script>
 </head>
 
 <body onload="loaded()">
+    <div id="config-loaded"></div>
     <div id="audio-top"></div>
     <div id="audio-container"></div>
 </body>
