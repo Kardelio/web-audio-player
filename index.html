@@ -11,6 +11,8 @@
         html,
         body {
             margin: 0;
+            height: 100%;
+            background-color: lightgrey;
         }
 
         p {
@@ -120,13 +122,25 @@
         .audio-player {
             min-width: 30%;
         }
+
+        #audio-top {
+            padding: 0.5em;
+            width: 100%;
+            background: gray;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 150%;
+            font-family: monospace;
+            color: white;
+        }
     </style>
     <script>
         function percentage(partialValue, totalValue) {
             return (100 * partialValue) / totalValue;
         }
-        
-        function currentTimeStamp(current){
+
+        function currentTimeStamp(current) {
             return Math.round(current * 10) / 10; //round to 1 decimal place
         }
 
@@ -136,7 +150,7 @@
             document.getElementById(`${id}-block`).style.backgroundColor = "#4646fc";
         }
 
-        function pausePlay(id){
+        function pausePlay(id) {
             document.getElementById(id).pause();
             document.getElementById(`${id}-block`).style.backgroundColor = "#4646fc";
         }
@@ -162,6 +176,7 @@
         var currentPlayingId = null;
         function playFunc(id) {
             currentPlayingId = id;
+            document.getElementById("audio-top").innerHTML = id;
             document.getElementById(id).play();
             document.getElementById(id).addEventListener('timeupdate', (timeObj) => {
                 document.getElementById(`${id}-time`).innerHTML = `${percentage(document.getElementById(id).currentTime, document.getElementById(id).duration).toFixed(0)}% (${currentTimeStamp(document.getElementById(id).currentTime)})`;
@@ -270,6 +285,7 @@
 </head>
 
 <body onload="loaded()">
+    <div id="audio-top"></div>
     <div id="audio-container"></div>
 </body>
 
