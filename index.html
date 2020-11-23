@@ -18,21 +18,37 @@
         }
 
         #audio-container {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(5, 20%);
+            /* grid-auto-rows: 100px; */
+            /* grid-template-columns: 25% 25% 25% 25%; */
+            grid-gap: 2px;
         }
 
         .audio-label {
             margin-left: 2px;
-            font-size: 100%;
+            text-overflow: ellipsis;
+            font-size: 110%;
+            overflow: hidden;
             font-weight: bold;
             color: white;
             font-family: monospace;
+            white-space: nowrap;
+        }
+
+        .statusDiv {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: red;
+            display: inline-block;
+            margin-right: 2px;
         }
 
         .audio-time {
             color: pink;
             margin-left: 10px;
+            display: inline-block;
             font-family: monospace;
         }
 
@@ -40,6 +56,7 @@
         .audio-vol {
             color: pink;
             margin-left: 10px;
+            display: inline-block;
             font-family: monospace;
         }
 
@@ -55,6 +72,19 @@
             margin-bottom: 2px;
         }
 
+
+        .audio-pause {
+            background-color: lightpink;
+            border: 0px;
+            border-radius: 30%;
+            color: white;
+            position: absolute;
+            bottom: 0;
+            right: 6em;
+            margin-right: 2px;
+            margin-bottom: 2px;
+        }
+
         .audio-up {
             background-color: gray;
             border: 0px;
@@ -63,7 +93,6 @@
             position: absolute;
             bottom: 0;
             right: 4em;
-
             margin-right: 2px;
             margin-bottom: 2px;
         }
@@ -76,19 +105,15 @@
             position: absolute;
             bottom: 0;
             right: 2em;
-
             margin-right: 2px;
             margin-bottom: 2px;
         }
 
         .audio-block {
             align-items: center;
-            flex: 1;
-            height: 3em;
-            margin: 2px;
-            /* width: 100%; */
+            padding: 0.2em;
+            height: 2.5em;
             background-color: #4646fc;
-            flex: 1 0 20%;
             position: relative;
         }
 
@@ -100,6 +125,10 @@
         function percentage(partialValue, totalValue) {
             return (100 * partialValue) / totalValue;
         }
+        
+        function currentTimeStamp(current){
+            return Math.round(current * 10) / 10; //round to 1 decimal place
+        }
 
         function stopPlay(id) {
             document.getElementById(id).pause();
@@ -107,21 +136,26 @@
             document.getElementById(`${id}-block`).style.backgroundColor = "#4646fc";
         }
 
+        function pausePlay(id){
+            document.getElementById(id).pause();
+            document.getElementById(`${id}-block`).style.backgroundColor = "#4646fc";
+        }
+
         function upVolume(id) {
-            if(parseFloat(document.getElementById(id).volume) < 1){
+            if (parseFloat(document.getElementById(id).volume) < 1) {
                 var vol = document.getElementById(id).volume;
                 currentVolume = Math.round((vol + 0.1) * 10) / 10;
-                document.getElementById(id).volume = currentVolume;    
-                document.getElementById(id+"-vol").innerHTML = currentVolume;
+                document.getElementById(id).volume = currentVolume;
+                document.getElementById(id + "-vol").innerHTML = currentVolume;
             }
         }
 
         function downVolume(id) {
-            if(parseFloat(document.getElementById(id).volume) > 0){
+            if (parseFloat(document.getElementById(id).volume) > 0) {
                 var vol = document.getElementById(id).volume;
                 currentVolume = Math.round((vol - 0.1) * 10) / 10;
                 document.getElementById(id).volume = currentVolume;
-                document.getElementById(id+"-vol").innerHTML = currentVolume;   
+                document.getElementById(id + "-vol").innerHTML = currentVolume;
             }
         }
 
@@ -130,7 +164,7 @@
             currentPlayingId = id;
             document.getElementById(id).play();
             document.getElementById(id).addEventListener('timeupdate', (timeObj) => {
-                document.getElementById(`${id}-time`).innerHTML = `${percentage(document.getElementById(id).currentTime, document.getElementById(id).duration).toFixed(0)}%`;
+                document.getElementById(`${id}-time`).innerHTML = `${percentage(document.getElementById(id).currentTime, document.getElementById(id).duration).toFixed(0)}% (${currentTimeStamp(document.getElementById(id).currentTime)})`;
             })
             document.getElementById(`${id}-block`).style.backgroundColor = "darkblue";
             files.forEach(file => {
@@ -165,7 +199,6 @@
                 e.stopPropagation();
             }
 
-
             var downButton = document.createElement("button");
             downButton.className = "audio-down";
             downButton.innerHTML = "v";
@@ -174,10 +207,17 @@
                 e.stopPropagation();
             }
 
+            var pauseButton = document.createElement("button");
+            pauseButton.className = "audio-pause";
+            pauseButton.innerHTML = "P";
+            pauseButton.onclick = (e) => {
+                pausePlay(file);
+                e.stopPropagation();
+            }
 
             var label = document.createElement("p");
             label.className = "audio-label";
-            label.innerHTML = file;
+            label.innerHTML = `<span id="${file}-status" class="statusDiv"></span>${file}`;
 
             var labelTime = document.createElement("p");
             labelTime.className = "audio-time";
@@ -192,6 +232,10 @@
             var sound = document.createElement('audio');
             sound.id = file;
             sound.className = "audio-player";
+            sound.addEventListener('canplaythrough', () => {
+                console.log("LOADED: ", file);
+                document.getElementById(`${file}-status`).style.backgroundColor = "lightGreen";
+            })
             sound.onplay = () => {
                 playFunc(file);
             }
@@ -212,6 +256,7 @@
             audioBlock.appendChild(resetButton);
             audioBlock.appendChild(upButton);
             audioBlock.appendChild(downButton);
+            audioBlock.appendChild(pauseButton);
             document.getElementById("audio-container").appendChild(audioBlock);
         }
 
