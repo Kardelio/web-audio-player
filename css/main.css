@@ -1,0 +1,151 @@
+html,
+body {
+    margin: 0;
+    height: 100%;
+    background-color: lightgrey;
+}
+
+#config-missing {
+    text-align: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    background: darkred;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    color: white;
+}
+
+#config-missing-button {
+    border: 2px solid darkblue;
+    border-radius: 3px;
+    font-size: 150%;
+    padding: 0.2em;
+    background-color: lightblue;
+}
+
+p {
+    margin: 0;
+}
+
+#audio-container {
+    display: grid;
+    grid-template-columns: repeat(6, 16.5%);
+    /* grid-auto-rows: 100px; */
+    /* grid-template-columns: 25% 25% 25% 25%; */
+    grid-gap: 2px;
+    padding: 0.2em;
+    padding-right: 0.6em;
+}
+
+.audio-label {
+    margin-left: 2px;
+    text-overflow: ellipsis;
+    font-size: 100%;
+    overflow: hidden;
+    font-weight: bold;
+    color: white;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
+.statusDiv {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: red;
+    display: inline-block;
+    margin-right: 2px;
+}
+
+.audio-time {
+    color: pink;
+    margin-left: 1px;
+    display: inline-block;
+    font-size: 80%;
+    font-family: monospace;
+}
+
+
+.audio-vol {
+    color: pink;
+    margin-left: 1px;
+    font-size: 80%;
+    display: inline-block;
+    font-family: monospace;
+}
+
+.audio-tags {
+    font-size: 65%;
+    color: #a6a6a6;
+    font-family: monospace;
+    font-style: italic;
+}
+
+.button-div{
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    right: 0;
+}
+
+.audio-control-button{
+    border: 0px;
+    border-radius: 30%;
+    color: white;
+    font-size: 70%;
+    padding: 1px 4px;
+    margin-left: 2px;
+}
+
+.audio-reset {
+    background-color: darkred;
+}
+
+.audio-pause {
+    background-color: brown;
+}
+
+.audio-up {
+    background-color: gray;
+}
+
+.audio-down {
+    background-color: gray;
+}
+
+.audio-block {
+    align-items: center;
+    padding: 0.1em;
+    position: relative;
+}
+
+.audio-player {
+    min-width: 30%;
+}
+
+#audio-top {
+    padding: 0.1em;
+    width: 100%;
+    background: gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 130%;
+    font-family: monospace;
+    color: white;
+}
+
+.progress-bar {
+    width: 0px;
+    height: 2px;
+    background: yellow;
+    transition: width .1s linear;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
