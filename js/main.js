@@ -1,8 +1,14 @@
 const COMBAT_TAG = "combat";
+const SPECIAL_TAG = "special";
+
 const LIGHT_BLUE = "#4646fc";
 const DARK_BLUE = "#00008b";
+
 const LIGHT_COMBAT = "#b84747";
 const DARK_COMBAT = "#5b0202";
+
+const LIGHT_SPECIAL = "#478a14";
+const DARK_SPECIAL = "#33551a";
 
 var currentPlayingObj = null;
 
@@ -14,6 +20,16 @@ function downloadObjectAsJson(exportObj, exportName) {
     document.body.appendChild(downloadAnchorNode); // required for firefox
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+}
+
+function getColourForBlock(tags, isOn){
+    if (tags.includes(COMBAT_TAG)) {
+        return isOn ? DARK_COMBAT : LIGHT_COMBAT;
+    } else if(tags.includes(SPECIAL_TAG)){
+        return isOn ? DARK_SPECIAL : LIGHT_SPECIAL;
+    } else {
+        return isOn ? DARK_BLUE : LIGHT_BLUE;
+    }
 }
 
 function createElementFromHTML(htmlString) {
@@ -47,20 +63,29 @@ function currentTimeStamp(current) {
 function stopPlayWithConfig(obj) {
     document.getElementById(obj.file).pause();
     document.getElementById(obj.file).currentTime = 0;
-    if (obj.tags.includes(COMBAT_TAG)) {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_COMBAT;
-    } else {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_BLUE;
-    }
+    document.getElementById(`${obj.file}-block`).style.backgroundColor = getColourForBlock(obj.tags,false);
+
+    // if (obj.tags.includes(COMBAT_TAG)) {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_COMBAT;
+    // } else if(obj.tags.includes(SPECIAL_TAG)){
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_SPECIAL;
+    // }
+    // else {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_BLUE;
+    // }
 }
 
 function pausePlayWithConfig(obj) {
     document.getElementById(obj.file).pause();
-    if (obj.tags.includes(COMBAT_TAG)) {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_COMBAT;
-    } else {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_BLUE;
-    }
+    //NEW
+    document.getElementById(`${obj.file}-block`).style.backgroundColor = getColourForBlock(obj.tags, false);
+    // if (obj.tags.includes(COMBAT_TAG)) {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_COMBAT;
+    // } else if(obj.tags.includes(SPECIAL_TAG)){
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_SPECIAL;
+    // } else {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_BLUE;
+    // }
 }
 
 function upVolume(id) {
@@ -89,28 +114,39 @@ function playFuncWithConfig(obj) {
     document.getElementById(obj.file).addEventListener('timeupdate', (timeObj) => {
         document.getElementById(`${obj.file}-time`).innerHTML = `${percentage(document.getElementById(obj.file).currentTime, document.getElementById(obj.file).duration).toFixed(0)}% (${currentTimeStamp(document.getElementById(obj.file).currentTime)})`;
     })
-    if (obj.tags.includes(COMBAT_TAG)) {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = DARK_COMBAT;
-    } else {
-        document.getElementById(`${obj.file}-block`).style.backgroundColor = DARK_BLUE;
-    }
+    document.getElementById(`${obj.file}-block`).style.backgroundColor = getColourForBlock(obj.tags, true);
+
+    // if (obj.tags.includes(COMBAT_TAG)) {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = DARK_COMBAT;
+    // } else if(obj.tags.includes(SPECIAL_TAG)){
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = DARK_SPECIAL;
+    // }  else {
+    //     document.getElementById(`${obj.file}-block`).style.backgroundColor = DARK_BLUE;
+    // }
     config.forEach(file => {
         if (file.file != obj.file) {
             document.getElementById(file.file).pause();
-            if (file.tags.includes(COMBAT_TAG)) {
-                document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_COMBAT;
-            } else {
-                document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_BLUE;
-            }
+            document.getElementById(`${file.file}-block`).style.backgroundColor = getColourForBlock(file.tags,false);
+
+            // if (file.tags.includes(COMBAT_TAG)) {
+            //     document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_COMBAT;
+            // } else if(file.tags.includes(SPECIAL_TAG)){
+            //     document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_SPECIAL;
+            // }  else {
+            //     document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_BLUE;
+            // }
         }
     });
 }
 
 function loadSingleAudioBlock(configObject) {
     let backColour = LIGHT_BLUE;
-    if (configObject.tags.includes(COMBAT_TAG)) {
-        backColour = LIGHT_COMBAT;
-    }
+    backColour = getColourForBlock(configObject.tags, false);
+    // if (configObject.tags.includes(COMBAT_TAG)) {
+    //     backColour = LIGHT_COMBAT;
+    // } else if(configObject.tags.includes(SPECIAL_TAG)){
+    //     backColour = LIGHT_SPECIAL;
+    // }
 
     var tags = "<div class='audio-tags'>";
     configObject.tags.forEach(tag => {
