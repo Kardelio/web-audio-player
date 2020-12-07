@@ -1,5 +1,6 @@
 const COMBAT_TAG = "combat";
 const SPECIAL_TAG = "special";
+const MUSIC_TAG = "music";
 
 const LIGHT_BLUE = "#4646fc";
 const DARK_BLUE = "#00008b";
@@ -9,6 +10,9 @@ const DARK_COMBAT = "#5b0202";
 
 const LIGHT_SPECIAL = "#478a14";
 const DARK_SPECIAL = "#33551a";
+
+const LIGHT_MUSIC = "#cacc00";
+const DARK_MUSIC = "#8d8f1b";
 
 var currentPlayingObj = null;
 
@@ -22,11 +26,13 @@ function downloadObjectAsJson(exportObj, exportName) {
     downloadAnchorNode.remove();
 }
 
-function getColourForBlock(tags, isOn){
+function getColourForBlock(tags, isOn) {
     if (tags.includes(COMBAT_TAG)) {
         return isOn ? DARK_COMBAT : LIGHT_COMBAT;
-    } else if(tags.includes(SPECIAL_TAG)){
+    } else if (tags.includes(SPECIAL_TAG)) {
         return isOn ? DARK_SPECIAL : LIGHT_SPECIAL;
+    } else if (tags.includes(MUSIC_TAG)) {
+        return isOn ? DARK_MUSIC : LIGHT_MUSIC;
     } else {
         return isOn ? DARK_BLUE : LIGHT_BLUE;
     }
@@ -63,7 +69,7 @@ function currentTimeStamp(current) {
 function stopPlayWithConfig(obj) {
     document.getElementById(obj.file).pause();
     document.getElementById(obj.file).currentTime = 0;
-    document.getElementById(`${obj.file}-block`).style.backgroundColor = getColourForBlock(obj.tags,false);
+    document.getElementById(`${obj.file}-block`).style.backgroundColor = getColourForBlock(obj.tags, false);
 
     // if (obj.tags.includes(COMBAT_TAG)) {
     //     document.getElementById(`${obj.file}-block`).style.backgroundColor = LIGHT_COMBAT;
@@ -109,7 +115,7 @@ function downVolume(id) {
 
 function playFuncWithConfig(obj) {
     currentPlayingObj = obj;
-    document.getElementById("audio-top").innerHTML = currentPlayingObj.file;
+    // document.getElementById("audio-top").innerHTML = currentPlayingObj.file;
     document.getElementById(obj.file).play();
     document.getElementById(obj.file).addEventListener('timeupdate', (timeObj) => {
         document.getElementById(`${obj.file}-time`).innerHTML = `${percentage(document.getElementById(obj.file).currentTime, document.getElementById(obj.file).duration).toFixed(0)}% (${currentTimeStamp(document.getElementById(obj.file).currentTime)})`;
@@ -126,7 +132,7 @@ function playFuncWithConfig(obj) {
     config.forEach(file => {
         if (file.file != obj.file) {
             document.getElementById(file.file).pause();
-            document.getElementById(`${file.file}-block`).style.backgroundColor = getColourForBlock(file.tags,false);
+            document.getElementById(`${file.file}-block`).style.backgroundColor = getColourForBlock(file.tags, false);
 
             // if (file.tags.includes(COMBAT_TAG)) {
             //     document.getElementById(`${file.file}-block`).style.backgroundColor = LIGHT_COMBAT;
@@ -226,7 +232,7 @@ function advanceProgressBar(duration, element, id) {
 }
 
 function startTimer(duration, element, id) {
-    if (percentages.id < 100) {  
+    if (percentages.id < 100) {
         timer = setTimeout(function () { advanceProgressBar(duration, element, id) }, 100);
     } else {
         clearTimeout(timer);

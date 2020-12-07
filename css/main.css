@@ -1,8 +1,16 @@
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
 html,
 body {
     margin: 0;
     height: 100%;
     background-color: lightgrey;
+    overflow-y: hidden;
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 #config-missing {
@@ -34,7 +42,8 @@ p {
 
 #audio-container {
     display: grid;
-    grid-template-columns: repeat(6, 16.5%);
+    /* grid-template-columns: repeat(6, 16.5%); */
+    grid-template-columns: repeat(2, 50%);
     /* grid-auto-rows: 100px; */
     /* grid-template-columns: 25% 25% 25% 25%; */
     grid-gap: 2px;
@@ -45,17 +54,17 @@ p {
 .audio-label {
     margin-left: 2px;
     text-overflow: ellipsis;
-    font-size: 100%;
-    overflow: hidden;
+    font-size: 85%;
+    /* overflow: hidden; */
     font-weight: bold;
     color: white;
     font-family: monospace;
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 
 .statusDiv {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: red;
     display: inline-block;
@@ -86,14 +95,14 @@ p {
     font-style: italic;
 }
 
-.button-div{
+.button-div {
     position: absolute;
     bottom: 0;
     display: flex;
     right: 0;
 }
 
-.audio-control-button{
+.audio-control-button {
     border: 0px;
     border-radius: 30%;
     color: white;
@@ -128,7 +137,7 @@ p {
     min-width: 30%;
 }
 
-#audio-top {
+/* #audio-top {
     padding: 0.1em;
     width: 100%;
     background: gray;
@@ -138,7 +147,7 @@ p {
     font-size: 130%;
     font-family: monospace;
     color: white;
-}
+} */
 
 .progress-bar {
     width: 0px;
